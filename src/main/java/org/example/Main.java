@@ -86,16 +86,31 @@ public class Main {
     private static void modifyEvent() {
         System.out.print("Enter event name to modify: ");
         String name = scanner.nextLine();
+        boolean found = false;
+
         for (Event e : eventManager.getEvents()) {
             if (e.getName().equalsIgnoreCase(name)) {
+                found = true;
+
                 System.out.print("Enter new location: ");
                 String newLocation = scanner.nextLine();
-                ModifyCommand cmd = new ModifyCommand(e, newLocation);
-                undoManager.execute(cmd);
+                undoManager.execute(new ModifyCommand(e, Field.LOCATION, newLocation));
 
+                System.out.print("Enter new date: ");
+                String newDate = scanner.nextLine();
+                undoManager.execute(new ModifyCommand(e, Field.DATE, newDate));
 
+                System.out.print("Enter new time: ");
+                String newTime = scanner.nextLine();
+                undoManager.execute(new ModifyCommand(e, Field.TIME, newTime));
+
+                System.out.println("Event updated.");
             }
         }
-        System.out.println("Event not found.");
+
+        if (!found) {
+            System.out.println("Event not found.");
+        }
     }
+
 }

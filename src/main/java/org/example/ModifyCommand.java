@@ -1,28 +1,40 @@
 package org.example;
 
 //Command Design pattern implementation
-class ModifyCommand implements Command {
+public class ModifyCommand implements Command {
     private Event event;
-    private String oldLocation, newLocation;
-    private String oldDate, newDate;
-    private String oldTime, newTime;
+    private Field field;
+    private String oldValue;
+    private String newValue;
 
-
-    public ModifyCommand(Event event, String newLocation) {
+    public ModifyCommand(Event event, Field field, String newValue) {
         this.event = event;
-        this.oldLocation = event.getLocation();
-        this.newLocation = newLocation;
+        this.field = field;
+        this.newValue = newValue;
+
+        // Değişiklik öncesi değer saklanıyor
+        switch (field) {
+            case LOCATION -> this.oldValue = event.getLocation();
+            case DATE -> this.oldValue = event.getDate();
+            case TIME -> this.oldValue = event.getTime();
+        }
     }
 
+    @Override
     public void execute() {
-        event.setLocation(newLocation);
-        event.setDate(newDate);
-        event.setTime(newTime);
+        switch (field) {
+            case LOCATION -> event.setLocation(newValue);
+            case DATE -> event.setDate(newValue);
+            case TIME -> event.setTime(newValue);
+        }
     }
 
+    @Override
     public void undo() {
-        event.setLocation(oldLocation);
-        event.setTime(oldTime);
-        event.setDate(oldDate);
+        switch (field) {
+            case LOCATION -> event.setLocation(oldValue);
+            case DATE -> event.setDate(oldValue);
+            case TIME -> event.setTime(oldValue);
+        }
     }
 }
