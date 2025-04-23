@@ -1,5 +1,12 @@
 package org.example;
 
+import org.example.command.ModifyCommand;
+import org.example.command.UndoManager;
+import org.example.singleton.Event;
+import org.example.singleton.EventManager;
+import org.example.singleton.Field;
+import org.example.strategy.*;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -34,7 +41,7 @@ public class Main {
         System.out.print("Organizer: "); String organizer = scanner.nextLine();
 
         List<String> categories = new ArrayList<>();
-        System.out.println("Enter up to 3 categories:");
+        System.out.println("Enter up to three categories (press Enter after each category, or enter 'done' to finish):");
         for (int i = 0; i < 3; i++) {
             String cat = scanner.nextLine();
             if (cat.isEmpty()) break;
@@ -42,7 +49,7 @@ public class Main {
         }
 
         List<String> tags = new ArrayList<>();
-        System.out.println("Enter up to 3 tags:");
+        System.out.println("Enter up to three tags (press Enter after each tag, or enter 'done' to finish):");
         for (int i = 0; i < 3; i++) {
             String tag = scanner.nextLine();
             if (tag.isEmpty()) break;
@@ -55,20 +62,32 @@ public class Main {
     }
 
     private static void searchEvent() {
-        System.out.print("Enter search keyword: ");
+        System.out.print("Search by (name/category/tag): ");
+        String type = scanner.nextLine();
+        SearchStrategy strategy = switch (type.toLowerCase()) {
+            case "category" -> new CategorySearchStrategy();
+            case "tag" -> new TagSearchStrategy();
+            default -> new NameSearchStrategy();
+        };
+
+        System.out.print("Enter keyword: ");
         String keyword = scanner.nextLine();
-        List<Event> results = eventManager.search(keyword);
+
+        List<Event> results = eventManager.search(keyword, strategy);
         if (results.isEmpty()) {
             System.out.println("No results found.");
             return;
         }
-        System.out.print("Sort by name ascending? (y/n): ");
+
+        System.out.print("Sort by name asc? (y/n): ");
         boolean asc = scanner.nextLine().equalsIgnoreCase("y");
-        eventManager.sortByName(asc);
+        eventManager.sort(asc ? new SortByNameAsc() : new SortByDateDesc());
+
         for (int i = 0; i < results.size(); i++) {
             System.out.println(i + ": " + results.get(i));
         }
     }
+
 
     private static void registerEvent() {
         System.out.print("Enter event name to register: ");

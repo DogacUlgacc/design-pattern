@@ -1,4 +1,7 @@
-package org.example;
+package org.example.command;
+
+import org.example.singleton.Event;
+import org.example.singleton.Field;
 
 //Command Design pattern implementation
 public class ModifyCommand implements Command {

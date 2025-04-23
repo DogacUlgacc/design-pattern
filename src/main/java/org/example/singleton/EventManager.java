@@ -1,10 +1,13 @@
-package org.example;
+package org.example.singleton;
+
+import org.example.strategy.SearchStrategy;
+import org.example.strategy.SortStrategy;
 
 import java.util.ArrayList;
 import java.util.List;
 
 //(Singleton Design Pattern)
-class EventManager {
+public class EventManager {
     private static EventManager instance;
     private List<Event> events = new ArrayList<>();
 
@@ -21,20 +24,22 @@ class EventManager {
 
     public List<Event> getEvents() { return events; }
 
-    public List<Event> search(String keyword) {
+    public List<Event> search(String keyword, SearchStrategy strategy) {
         List<Event> result = new ArrayList<>();
         for (Event e : events) {
-            if (e.getName().toLowerCase().contains(keyword.toLowerCase()) ||
-                    e.getTags().stream().anyMatch(tag -> tag.toLowerCase().contains(keyword.toLowerCase())) ||
-                    e.getCategories().stream().anyMatch(cat -> cat.toLowerCase().contains(keyword.toLowerCase())) ||
-                    e.getDate().contains(keyword)) {
+            if (strategy.matches(e, keyword)) {
                 result.add(e);
             }
         }
         return result;
     }
 
+
     public void sortByName(boolean ascending) {
         events.sort((e1, e2) -> ascending ? e1.getName().compareTo(e2.getName()) : e2.getName().compareTo(e1.getName()));
     }
+    public void sort(SortStrategy strategy) {
+        strategy.sort(events);
+    }
+
 }

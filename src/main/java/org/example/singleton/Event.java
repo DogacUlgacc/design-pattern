@@ -1,4 +1,4 @@
-package org.example;
+package org.example.singleton;
 import java.util.*;
 
 public class Event {

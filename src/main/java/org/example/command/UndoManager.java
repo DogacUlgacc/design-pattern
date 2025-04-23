@@ -1,8 +1,8 @@
-package org.example;
+package org.example.command;
 
 import java.util.Stack;
 
-class UndoManager {
+public class UndoManager {
 private Stack<Command> history = new Stack<>();
 
 public void execute(Command command) {

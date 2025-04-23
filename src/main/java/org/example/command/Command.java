@@ -1,4 +1,4 @@
-package org.example;
+package org.example.command;
 
 //Command Design Pattern
 interface Command {
