@@ -80,7 +80,7 @@ public class Main {
         }
 
         System.out.print("Sort by name asc? (y/n): ");
-        boolean asc = scanner.nextLine().equalsIgnoreCase("y");
+        boolean asc = scanner.nextLine().equalsIgnoreCase("n");
         eventManager.sort(asc ? new SortByNameAsc() : new SortByDateDesc());
 
         for (int i = 0; i < results.size(); i++) {
