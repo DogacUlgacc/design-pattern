@@ -1,4 +1,4 @@
-package org.example.strategy;
+package org.example.strategy.sort;
 
 import org.example.singleton.Event;
 import java.util.List;

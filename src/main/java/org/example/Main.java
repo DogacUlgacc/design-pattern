@@ -2,10 +2,17 @@ package org.example;
 
 import org.example.command.ModifyCommand;
 import org.example.command.UndoManager;
+import org.example.command.UpdateListCommand;
 import org.example.singleton.Event;
 import org.example.singleton.EventManager;
 import org.example.singleton.Field;
-import org.example.strategy.*;
+import org.example.strategy.search.CategorySearchStrategy;
+import org.example.strategy.search.NameSearchStrategy;
+import org.example.strategy.search.SearchStrategy;
+import org.example.strategy.search.TagSearchStrategy;
+import org.example.strategy.sort.SortByNameAsc;
+import org.example.strategy.sort.SortByNameDesc;
+import org.example.strategy.sort.SortStrategy;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,26 +26,33 @@ public class Main {
     public static void main(String[] args) {
         while (true) {
             System.out.println("Enter command: ");
-            System.out.println("1. Create Event\n2. Search Event\n3. Register to Event\n4. Modify Event\n5. Undo\n6. Exit");
-            int choice = scanner.nextInt(); scanner.nextLine();
+            System.out.println("1. Create Event\n2. Search Event\n3. Register to Event\n4. Modify Event\n5. Undo\n6. Cancel Registration\n7. Exit");
+            int choice = scanner.nextInt();
+            scanner.nextLine();
             switch (choice) {
                 case 1 -> createEvent();
                 case 2 -> searchEvent();
                 case 3 -> registerEvent();
                 case 4 -> modifyEvent();
                 case 5 -> undoManager.undo();
-                case 6 -> System.exit(0);
+                case 6 -> cancelRegistration();
+                case 7 -> System.exit(0);
                 default -> System.out.println("Invalid option");
             }
         }
     }
 
     private static void createEvent() {
-        System.out.print("Name: "); String name = scanner.nextLine();
-        System.out.print("Location: "); String location = scanner.nextLine();
-        System.out.print("Date (YYYY-MM-DD): "); String date = scanner.nextLine();
-        System.out.print("Time (HH:MM): "); String time = scanner.nextLine();
-        System.out.print("Organizer: "); String organizer = scanner.nextLine();
+        System.out.print("Name: ");
+        String name = scanner.nextLine();
+        System.out.print("Location: ");
+        String location = scanner.nextLine();
+        System.out.print("Date (YYYY-MM-DD): ");
+        String date = scanner.nextLine();
+        System.out.print("Time (HH:MM): ");
+        String time = scanner.nextLine();
+        System.out.print("Organizer: ");
+        String organizer = scanner.nextLine();
 
         List<String> categories = new ArrayList<>();
         System.out.println("Enter up to three categories (press Enter after each category, or enter 'done' to finish):");
@@ -79,16 +93,16 @@ public class Main {
             return;
         }
 
-        System.out.print("Sort by name asc? (y/n): ");
-        boolean asc = scanner.nextLine().equalsIgnoreCase("n");
-        eventManager.sort(asc ? new SortByNameAsc() : new SortByDateDesc());
+        System.out.print("Sort by name asc or desc? (a/d): ");
+        boolean asc = scanner.nextLine().equalsIgnoreCase("a");
+        SortStrategy sortStrategy = asc ? new SortByNameAsc() : new SortByNameDesc();
+        sortStrategy.sort(results); //
 
         for (int i = 0; i < results.size(); i++) {
             System.out.println(i + ": " + results.get(i));
         }
     }
-
-
+    
     private static void registerEvent() {
         System.out.print("Enter event name to register: ");
         String name = scanner.nextLine();
@@ -101,6 +115,24 @@ public class Main {
         }
         System.out.println("Event not found.");
     }
+
+    private static void cancelRegistration() {
+        System.out.print("Enter event name to cancel registration: ");
+        String name = scanner.nextLine();
+        for (Event e : eventManager.getEvents()) {
+            if (e.getName().equalsIgnoreCase(name)) {
+                if (e.getRegistrationCount() > 0) {
+                    e.cancel();
+                    System.out.println("Your registration is canceled.");
+                } else {
+                    System.out.println("No registrations to cancel.");
+                }
+                return;
+            }
+        }
+        System.out.println("Event not found.");
+    }
+
 
     private static void modifyEvent() {
         System.out.print("Enter event name to modify: ");
@@ -122,6 +154,25 @@ public class Main {
                 System.out.print("Enter new time: ");
                 String newTime = scanner.nextLine();
                 undoManager.execute(new ModifyCommand(e, Field.TIME, newTime));
+
+                System.out.println("Enter up to three new categories:");
+                List<String> newCategories = new ArrayList<>();
+                for (int i = 0; i < 3; i++) {
+                    String cat = scanner.nextLine();
+                    if (cat.isEmpty()) break;
+                    newCategories.add(cat);
+                }
+                undoManager.execute(new UpdateListCommand(e, Field.CATEGORIES, newCategories));
+
+                System.out.println("Enter up to three new tags:");
+                List<String> newTags = new ArrayList<>();
+                for (int i = 0; i < 3; i++) {
+                    String tag = scanner.nextLine();
+                    if (tag.isEmpty()) break;
+                    newTags.add(tag);
+                }
+                undoManager.execute(new UpdateListCommand(e, Field.TAGS, newTags));
+
 
                 System.out.println("Event updated.");
             }

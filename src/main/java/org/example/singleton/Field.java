@@ -1,5 +1,5 @@
 package org.example.singleton;
 
 public enum Field {
-    LOCATION, DATE, TIME
+    LOCATION, DATE, TIME, CATEGORIES, TAGS
 }

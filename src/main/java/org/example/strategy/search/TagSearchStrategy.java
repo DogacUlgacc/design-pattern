@@ -1,4 +1,4 @@
-package org.example.strategy;
+package org.example.strategy.search;
 import org.example.singleton.Event;
 
 public class TagSearchStrategy implements SearchStrategy {

@@ -13,6 +13,7 @@ public void execute(Command command) {
 public void undo() {
     if (!history.isEmpty()) {
         history.pop().undo();
+        System.out.println("The transaction was rolled back");
     } else {
         System.out.println("Nothing to undo.");
     }

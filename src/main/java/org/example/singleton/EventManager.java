@@ -1,7 +1,7 @@
 package org.example.singleton;
 
-import org.example.strategy.SearchStrategy;
-import org.example.strategy.SortStrategy;
+import org.example.strategy.search.SearchStrategy;
+import org.example.strategy.sort.SortStrategy;
 
 import java.util.ArrayList;
 import java.util.List;
